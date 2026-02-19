@@ -155,8 +155,8 @@ const authStyles = StyleSheet.create({
     flex: 1,
   },
   logo: {
-    width: 140,
-    height: 70,
+    width: 220,
+    height: 110,
     alignSelf: 'center',
     marginBottom: 32,
   },
@@ -713,8 +713,8 @@ const onboardingStyles = StyleSheet.create({
     height: '100%',
   },
   logo: {
-    width: 120,
-    height: 60,
+    width: 200,
+    height: 100,
     marginBottom: 24,
   },
   textBlock: {
