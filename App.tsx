@@ -1,4 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
+import { useFonts } from 'expo-font';
 import React, { useRef, useState } from 'react';
 import {
   Animated,
@@ -11,6 +12,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {
+  Montserrat_400Regular,
+  Montserrat_600SemiBold,
+  Montserrat_700Bold,
+} from '@expo-google-fonts/montserrat';
 
 const { width } = Dimensions.get('window');
 
@@ -46,45 +52,49 @@ const SLIDES: OnboardingSlide[] = [
 ];
 
 const App: React.FC = () => {
+  const [fontsLoaded] = useFonts({
+    Montserrat: Montserrat_400Regular,
+    'Montserrat-Bold': Montserrat_700Bold,
+    'Montserrat-SemiBold': Montserrat_600SemiBold,
+  });
+
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  if (!fontsLoaded) {
+    return null; // Or a loading screen
+  }
 
   if (!showOnboarding) {
     return (
-      <SafeAreaView style={introStyles.safeArea}>
-        <StatusBar style="light" />
-        <View style={introStyles.outerContainer}>
-          <View style={introStyles.cardContainer}>
-            {/* Top hero area */}
-            <View style={introStyles.heroContainer}>
-              <Image
-                source={require('./assets/firstScreenImage.png')}
-                style={introStyles.heroImage}
-                resizeMode="cover"
-              />
-            </View>
+      <View style={introStyles.container}>
+        <StatusBar style="light" translucent />
+        {/* Full screen background image */}
+        <Image
+          source={require('./assets/firstScreenImage.png')}
+          style={introStyles.backgroundImage}
+          resizeMode="cover"
+        />
 
-            {/* Bottom overlay card */}
-            <View style={introStyles.bottomCard}>
-              <Text style={introStyles.title}>Ecosync AI</Text>
-              <Text style={introStyles.subtitle}>
-                Your personal AI guide to smarter energy use, daily eco-challenges,
-                and real-time insights.
-              </Text>
+        {/* Bottom overlay card */}
+        <View style={introStyles.bottomCard}>
+          <Text style={introStyles.title}>Ecosync</Text>
+          <Text style={introStyles.subtitle}>
+            Your personal AI guide to smarter energy use, daily eco-challenges,
+            and real-time insights.
+          </Text>
 
-              <TouchableOpacity
-                activeOpacity={0.9}
-                style={introStyles.primaryButton}
-                onPress={() => setShowOnboarding(true)}
-              >
-                <View style={introStyles.buttonIconWrapper}>
-                  <Text style={introStyles.buttonIcon}>{'>'}</Text>
-                </View>
-                <Text style={introStyles.buttonLabel}>Get Started</Text>
-              </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.9}
+            style={introStyles.primaryButton}
+            onPress={() => setShowOnboarding(true)}
+          >
+            <View style={introStyles.buttonIconWrapper}>
+              <Text style={introStyles.buttonIcon}>{'>'}</Text>
             </View>
-          </View>
+            <Text style={introStyles.buttonLabel}>Get Started</Text>
+          </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -243,40 +253,32 @@ const OnboardingCarousel: React.FC = () => {
 };
 
 const introStyles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: '#111827',
   },
-  outerContainer: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 24,
-    justifyContent: 'center',
-  },
-  cardContainer: {
-    flex: 1,
-    borderRadius: 32,
-    overflow: 'hidden',
-    backgroundColor: '#111827',
-  },
-  heroContainer: {
-    flex: 3,
-    backgroundColor: '#60a5fa',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  heroImage: {
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     width: '100%',
     height: '100%',
   },
   bottomCard: {
-    flex: 2,
-    backgroundColor: '#ffffff',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     paddingHorizontal: 24,
     paddingTop: 24,
     paddingBottom: 32,
+    marginBottom: 20,
+    minHeight: 280,
     justifyContent: 'space-between',
   },
   title: {
@@ -284,11 +286,14 @@ const introStyles = StyleSheet.create({
     fontWeight: '700',
     color: '#111827',
     marginBottom: 8,
+    textAlign: 'center',
+    fontFamily: 'Montserrat',
   },
   subtitle: {
     fontSize: 14,
     color: '#4b5563',
     lineHeight: 20,
+    fontFamily: 'Montserrat',
   },
   primaryButton: {
     marginTop: 24,
@@ -317,6 +322,7 @@ const introStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#ffffff',
+    fontFamily: 'Montserrat',
   },
 });
 
@@ -377,12 +383,14 @@ const onboardingStyles = StyleSheet.create({
     color: '#16a34a',
     marginBottom: 12,
     textAlign: 'center',
+    fontFamily: 'Montserrat',
   },
   description: {
     fontSize: 14,
     color: '#4b5563',
     lineHeight: 20,
     textAlign: 'center',
+    fontFamily: 'Montserrat',
   },
   bottomBar: {
     flexDirection: 'row',
@@ -403,6 +411,7 @@ const onboardingStyles = StyleSheet.create({
     fontSize: 14,
     color: '#4b5563',
     fontWeight: '500',
+    fontFamily: 'Montserrat',
   },
   dotsContainer: {
     flexDirection: 'row',
@@ -425,6 +434,7 @@ const onboardingStyles = StyleSheet.create({
     fontSize: 14,
     color: '#ffffff',
     fontWeight: '600',
+    fontFamily: 'Montserrat',
   },
 });
 
