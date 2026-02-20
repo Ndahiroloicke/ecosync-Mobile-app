@@ -17,7 +17,9 @@
       "bundleIdentifier": "com.ecosync.mobile",
       "buildNumber": "1.0.0",
       "infoPlist": {
-        "UIStatusBarStyle": "UIStatusBarStyleLightContent"
+        "UIStatusBarStyle": "UIStatusBarStyleLightContent",
+        "NSCameraUsageDescription": "This app needs access to your camera to take photos of your eco actions.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select images of your eco actions."
       }
     },
     "android": {
@@ -25,7 +27,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"

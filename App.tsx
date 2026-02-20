@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
+import * as ImagePicker from 'expo-image-picker';
 import React, { useRef, useState } from 'react';
 import {
   Animated,
@@ -109,115 +110,166 @@ const MainAppNavigator: React.FC = () => {
 
 // Home Screen Component
 const HomeScreen: React.FC = () => {
-  const impactCards = [
-    { id: '1', iconName: 'leaf', iconLib: 'Ionicons', value: '245', unit: 'kWh', label: 'Saved', color: '#10b981', bgColor: '#d1fae5' },
-    { id: '2', iconName: 'refresh-circle', iconLib: 'Ionicons', value: '1.2', unit: 'kg', label: 'Waste Diverted', color: '#059669', bgColor: '#a7f3d0' },
-    { id: '3', iconName: 'earth', iconLib: 'Ionicons', value: '89', unit: 'kg', label: 'CO₂ Reduced', color: '#16a34a', bgColor: '#bbf7d0' },
+  const stats = [
+    { id: '1', icon: 'leaf', value: '245', unit: 'kWh', label: 'Energy Saved', color: '#10b981', gradient: ['#d1fae5', '#a7f3d0'] },
+    { id: '2', icon: 'trash', value: '1.2', unit: 'kg', label: 'Waste Diverted', color: '#059669', gradient: ['#a7f3d0', '#86efac'] },
+    { id: '3', icon: 'earth', value: '89', unit: 'kg', label: 'CO₂ Reduced', color: '#16a34a', gradient: ['#bbf7d0', '#d1fae5'] },
+  ];
+
+  const recentActivity = [
+    { id: '1', user: 'Sarah M.', action: 'completed a challenge', time: '2h ago', points: 50 },
+    { id: '2', user: 'John D.', action: 'earned a new badge', time: '5h ago', points: 100 },
+    { id: '3', user: 'Emma K.', action: 'reached a milestone', time: '1d ago', points: 75 },
   ];
 
   return (
     <SafeAreaView style={homeStyles.container}>
-      <StatusBar style="dark" />
-      {/* Decorative background elements */}
-      <View style={homeStyles.decorativeCircle1} />
-      <View style={homeStyles.decorativeCircle2} />
-      
+      <StatusBar style="light" />
       <ScrollView
         style={homeStyles.scrollView}
         contentContainerStyle={homeStyles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Top Section with gradient background */}
-        <View style={homeStyles.topSection}>
-          <View style={homeStyles.topSectionContent}>
-            <View style={homeStyles.greetingContainer}>
-              <Text style={homeStyles.greeting}>Hi Kevin</Text>
-              <Ionicons name="hand-left" size={24} color="#111827" style={{ marginLeft: 8 }} />
+        {/* Hero Section with Gradient */}
+        <View style={homeStyles.heroSection}>
+          <View style={homeStyles.heroContent}>
+            <View style={homeStyles.heroTop}>
+              <View>
+                <Text style={homeStyles.heroGreeting}>Welcome back,</Text>
+                <Text style={homeStyles.heroName}>Ndahiro! 👋</Text>
+              </View>
+              <TouchableOpacity style={homeStyles.notificationButton}>
+                <Ionicons name="notifications-outline" size={24} color="#ffffff" />
+                <View style={homeStyles.notificationBadge} />
+              </TouchableOpacity>
             </View>
-            <View style={homeStyles.pointsSection}>
-              <Text style={homeStyles.pointsValue}>2,450</Text>
-              <Text style={homeStyles.pointsLabel}>Points</Text>
-            </View>
-            <View style={homeStyles.rankBadge}>
-              <Ionicons name="trophy" size={16} color="#16a34a" style={{ marginRight: 6 }} />
-              <Text style={homeStyles.rankText}>#12 in Gasabo</Text>
-            </View>
-          </View>
-        </View>
 
-        {/* Impact Cards - Horizontal Scroll */}
-        <View style={homeStyles.cardsSection}>
-          <Text style={homeStyles.sectionTitle}>Your Impact</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={homeStyles.cardsContainer}
-          >
-            {impactCards.map((card) => {
-              const IconComponent = card.iconLib === 'MaterialIcons' ? MaterialIcons : Ionicons;
-              return (
-                <View key={card.id} style={[homeStyles.impactCard, { backgroundColor: card.bgColor }]}>
-                  <View style={[homeStyles.cardIconContainer, { backgroundColor: card.color + '20' }]}>
-                    <IconComponent
-                      name={card.iconName as any}
-                      size={28}
-                      color={card.color}
-                    />
-                  </View>
-                  <Text style={[homeStyles.cardValue, { color: card.color }]}>
-                    {card.value} {card.unit}
-                  </Text>
-                  <Text style={homeStyles.cardLabel}>{card.label}</Text>
+            {/* Points Card */}
+            <View style={homeStyles.pointsCard}>
+              <View style={homeStyles.pointsCardHeader}>
+                <View>
+                  <Text style={homeStyles.pointsLabel}>Your Points</Text>
+                  <Text style={homeStyles.pointsValue}>2,450</Text>
                 </View>
-              );
-            })}
-          </ScrollView>
-        </View>
-
-        {/* Active Challenge Card */}
-        <View style={homeStyles.challengeCard}>
-          <View style={homeStyles.challengeHeader}>
-            <View style={homeStyles.challengeIconContainer}>
-              <Ionicons name="trophy" size={24} color="#fbbf24" />
-            </View>
-            <View style={homeStyles.challengeHeaderText}>
-              <Text style={homeStyles.challengeTitle}>Plastic-Free Week</Text>
-              <Text style={homeStyles.challengeSubtitle}>Active Challenge</Text>
+                <View style={homeStyles.pointsIconContainer}>
+                  <Ionicons name="star" size={32} color="#fbbf24" />
+                </View>
+              </View>
+              <View style={homeStyles.rankInfo}>
+                <Ionicons name="trophy" size={16} color="#16a34a" />
+                <Text style={homeStyles.rankText}>Rank #12 • Rwanda Coding Academy</Text>
+              </View>
             </View>
           </View>
-          <View style={homeStyles.progressContainer}>
-            <View style={homeStyles.progressBar}>
-              <View style={[homeStyles.progressFill, { width: '65%' }]} />
+        </View>
+
+        {/* Stats Grid */}
+        <View style={homeStyles.statsGrid}>
+          {stats.map((stat) => (
+            <View key={stat.id} style={[homeStyles.statCard, { borderLeftColor: stat.color }]}>
+              <View style={[homeStyles.statIconWrapper, { backgroundColor: stat.color + '15' }]}>
+                <Ionicons name={stat.icon as any} size={24} color={stat.color} />
+              </View>
+              <View style={homeStyles.statContent}>
+                <Text style={[homeStyles.statValue, { color: stat.color }]}>
+                  {stat.value} {stat.unit}
+                </Text>
+                <Text style={homeStyles.statLabel}>{stat.label}</Text>
+              </View>
             </View>
-            <View style={homeStyles.progressInfo}>
-              <Text style={homeStyles.progressText}>65% Complete</Text>
-              <Text style={homeStyles.timeRemaining}>3 days remaining</Text>
+          ))}
+        </View>
+
+        {/* Active Challenge Section */}
+        <View style={homeStyles.challengeSection}>
+          <View style={homeStyles.sectionHeader}>
+            <Text style={homeStyles.sectionTitle}>Active Challenge</Text>
+            <TouchableOpacity>
+              <Text style={homeStyles.seeAllText}>View All</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={homeStyles.challengeCard}>
+            <View style={homeStyles.challengeCardHeader}>
+              <View style={homeStyles.challengeBadge}>
+                <Ionicons name="flame" size={20} color="#f59e0b" />
+                <Text style={homeStyles.challengeBadgeText}>Active</Text>
+              </View>
+              <Ionicons name="trophy" size={28} color="#fbbf24" />
+            </View>
+            <Text style={homeStyles.challengeTitle}>Plastic-Free Week Challenge</Text>
+            <Text style={homeStyles.challengeDescription}>
+              Reduce plastic usage and earn bonus points
+            </Text>
+            <View style={homeStyles.progressSection}>
+              <View style={homeStyles.progressHeader}>
+                <Text style={homeStyles.progressLabel}>Progress</Text>
+                <Text style={homeStyles.progressPercent}>65%</Text>
+              </View>
+              <View style={homeStyles.progressBar}>
+                <View style={[homeStyles.progressFill, { width: '65%' }]} />
+              </View>
+              <Text style={homeStyles.progressTime}>3 days remaining</Text>
             </View>
           </View>
         </View>
 
         {/* Quick Actions */}
-        <View style={homeStyles.actionsSection}>
+        <View style={homeStyles.quickActionsSection}>
           <Text style={homeStyles.sectionTitle}>Quick Actions</Text>
-          <View style={homeStyles.actionsContainer}>
-            <TouchableOpacity style={homeStyles.actionButton} activeOpacity={0.8}>
-              <View style={[homeStyles.actionIcon, { backgroundColor: '#d1fae5' }]}>
-                <Ionicons name="add-circle" size={24} color="#16a34a" />
+          <View style={homeStyles.quickActionsGrid}>
+            <TouchableOpacity style={[homeStyles.quickActionCard, { backgroundColor: '#f0fdf4' }]}>
+              <View style={[homeStyles.quickActionIcon, { backgroundColor: '#16a34a' }]}>
+                <Ionicons name="add-circle" size={28} color="#ffffff" />
               </View>
-              <View style={homeStyles.actionTextContainer}>
-                <Text style={homeStyles.actionLabel}>Post Eco</Text>
-                <Text style={homeStyles.actionLabel}>Action</Text>
-              </View>
+              <Text style={homeStyles.quickActionLabel}>Post Action</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={homeStyles.actionButton} activeOpacity={0.8}>
-              <View style={[homeStyles.actionIcon, { backgroundColor: '#fef3c7' }]}>
-                <Ionicons name="flash" size={24} color="#f59e0b" />
+            <TouchableOpacity style={[homeStyles.quickActionCard, { backgroundColor: '#fffbeb' }]}>
+              <View style={[homeStyles.quickActionIcon, { backgroundColor: '#f59e0b' }]}>
+                <Ionicons name="gift" size={28} color="#ffffff" />
               </View>
-              <View style={homeStyles.actionTextContainer}>
-                <Text style={homeStyles.actionLabel}>View Energy</Text>
-                <Text style={homeStyles.actionLabel}>Usage</Text>
-              </View>
+              <Text style={homeStyles.quickActionLabel}>Rewards</Text>
             </TouchableOpacity>
+            <TouchableOpacity style={[homeStyles.quickActionCard, { backgroundColor: '#eff6ff' }]}>
+              <View style={[homeStyles.quickActionIcon, { backgroundColor: '#3b82f6' }]}>
+                <Ionicons name="people" size={28} color="#ffffff" />
+              </View>
+              <Text style={homeStyles.quickActionLabel}>Community</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[homeStyles.quickActionCard, { backgroundColor: '#f5f3ff' }]}>
+              <View style={[homeStyles.quickActionIcon, { backgroundColor: '#8b5cf6' }]}>
+                <Ionicons name="stats-chart" size={28} color="#ffffff" />
+              </View>
+              <Text style={homeStyles.quickActionLabel}>Analytics</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Recent Activity */}
+        <View style={homeStyles.activitySection}>
+          <View style={homeStyles.sectionHeader}>
+            <Text style={homeStyles.sectionTitle}>Recent Activity</Text>
+            <TouchableOpacity>
+              <Text style={homeStyles.seeAllText}>See All</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={homeStyles.activityList}>
+            {recentActivity.map((activity) => (
+              <View key={activity.id} style={homeStyles.activityItem}>
+                <View style={homeStyles.activityAvatar}>
+                  <Ionicons name="person" size={20} color="#6b7280" />
+                </View>
+                <View style={homeStyles.activityContent}>
+                  <Text style={homeStyles.activityText}>
+                    <Text style={homeStyles.activityUser}>{activity.user}</Text> {activity.action}
+                  </Text>
+                  <Text style={homeStyles.activityTime}>{activity.time}</Text>
+                </View>
+                <View style={homeStyles.activityPoints}>
+                  <Ionicons name="star" size={16} color="#fbbf24" />
+                  <Text style={homeStyles.activityPointsText}>+{activity.points}</Text>
+                </View>
+              </View>
+            ))}
           </View>
         </View>
       </ScrollView>
@@ -227,12 +279,89 @@ const HomeScreen: React.FC = () => {
 
 // Eco Quest Screen Component (Youth-focused waste impact reporting)
 const ChallengesScreen: React.FC = () => {
+  const TEST_USER_NAME = 'Ndahiro'; // Test user for simulation
   const [activeFilter, setActiveFilter] = useState('All');
   const [showPostModal, setShowPostModal] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisStep, setAnalysisStep] = useState(0);
+  const [analysisMessage, setAnalysisMessage] = useState('');
+  const [analysisProgress, setAnalysisProgress] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [postDescription, setPostDescription] = useState('');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showImagePickerModal, setShowImagePickerModal] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
+
+  // Request permissions on mount
+  React.useEffect(() => {
+    (async () => {
+      const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
+      const { status: mediaStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (cameraStatus !== 'granted' || mediaStatus !== 'granted') {
+        // Permissions not granted, but continue anyway (user can grant later)
+      }
+    })();
+  }, []);
+
+  const pickImage = async (source: 'camera' | 'library') => {
+    try {
+      let result;
+      if (source === 'camera') {
+        result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 0.8,
+        });
+      } else {
+        result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 0.8,
+        });
+      }
+
+      if (!result.canceled && result.assets[0]) {
+        setSelectedImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      alert('Failed to pick image. Please try again.');
+    }
+  };
+
+  const showImagePickerOptions = () => {
+    if (Platform.OS === 'ios') {
+      const { ActionSheetIOS } = require('react-native');
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Cancel', 'Take Photo', 'Choose from Library'],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex: number) => {
+          if (buttonIndex === 1) {
+            pickImage('camera');
+          } else if (buttonIndex === 2) {
+            pickImage('library');
+          }
+        },
+      );
+    } else {
+      // Android - show custom modal
+      setShowImagePickerModal(true);
+    }
+  };
+
+  const analysisSteps = [
+    { message: 'Uploading your image...', progress: 10 },
+    { message: 'AI analyzing image content...', progress: 25 },
+    { message: 'Detecting waste types...', progress: 45 },
+    { message: 'Classifying scene (cleanup/sorting/reduction)...', progress: 65 },
+    { message: 'Calculating environmental impact...', progress: 80 },
+    { message: 'Verifying authenticity...', progress: 95 },
+    { message: 'Finalizing score...', progress: 100 },
+  ];
 
   React.useEffect(() => {
     if (isAnalyzing) {
@@ -247,6 +376,76 @@ const ChallengesScreen: React.FC = () => {
       rotateAnim.setValue(0);
     }
   }, [isAnalyzing]);
+
+  const simulateAIAnalysis = () => {
+    setIsAnalyzing(true);
+    setAnalysisStep(0);
+    setAnalysisProgress(0);
+    setShowPostModal(false);
+
+    // Simulate step-by-step analysis
+    let currentStep = 0;
+    const stepInterval = setInterval(() => {
+      if (currentStep < analysisSteps.length) {
+        setAnalysisMessage(analysisSteps[currentStep].message);
+        setAnalysisProgress(analysisSteps[currentStep].progress);
+        setAnalysisStep(currentStep);
+        currentStep++;
+      } else {
+        clearInterval(stepInterval);
+        // After analysis, show result
+        setTimeout(() => {
+          setIsAnalyzing(false);
+          // Simulate AI scoring
+          const confidenceScore = 0.92; // High confidence for auto-approval
+          const estimatedPoints = Math.floor(Math.random() * 50) + 50; // 50-100 points
+          
+          if (confidenceScore >= 0.85) {
+            // Auto-approve
+            const newPost = {
+              id: Date.now().toString(),
+              userName: TEST_USER_NAME,
+              userImage: null,
+              image: selectedImage ? { uri: selectedImage } : require('./assets/firstImage.png'),
+              description: postDescription,
+              status: 'verified',
+              points: estimatedPoints,
+              time: 'Just now',
+              category: selectedCategory || 'Waste Cleanup',
+            };
+            
+            setPosts((prev) => [newPost, ...prev]);
+            setPostDescription('');
+            setSelectedCategory('');
+            setSelectedImage(null);
+            
+            // Show success message
+            alert(`✅ Verified! +${estimatedPoints} points\n\nYour eco action has been automatically approved by AI!`);
+          } else {
+            // Send to manual review
+            const newPost = {
+              id: Date.now().toString(),
+              userName: TEST_USER_NAME,
+              userImage: null,
+              image: selectedImage ? { uri: selectedImage } : require('./assets/firstImage.png'),
+              description: postDescription,
+              status: 'pending',
+              points: 0,
+              time: 'Just now',
+              category: selectedCategory || 'Waste Cleanup',
+            };
+            
+            setPosts((prev) => [newPost, ...prev]);
+            setPostDescription('');
+            setSelectedCategory('');
+            setSelectedImage(null);
+            
+            alert('⏳ Pending Review\n\nYour post is being reviewed by our team. You\'ll get points once approved!');
+          }
+        }, 1000);
+      }
+    }, 800); // Each step takes 800ms
+  };
   const [posts, setPosts] = useState([
     {
       id: '1',
@@ -364,16 +563,33 @@ const ChallengesScreen: React.FC = () => {
         contentContainerStyle={challengesStyles.feedContent}
         showsVerticalScrollIndicator={false}
       >
-        {posts.length === 0 ? (
-          <View style={challengesStyles.emptyState}>
-            <Ionicons name="leaf-outline" size={64} color="#d1d5db" />
-            <Text style={challengesStyles.emptyTitle}>No posts yet</Text>
-            <Text style={challengesStyles.emptySubtitle}>
-              Be the first to post an eco action!
-            </Text>
-          </View>
-        ) : (
-          posts.map((post) => (
+        {(() => {
+          const filteredPosts =
+            activeFilter === 'My Posts'
+              ? posts.filter((post) => post.userName === TEST_USER_NAME)
+              : activeFilter === 'Trending'
+              ? posts.filter((post) => post.status === 'verified' && post.points >= 75)
+              : activeFilter === 'District'
+              ? posts // In real app, would filter by district
+              : posts;
+
+          if (filteredPosts.length === 0) {
+            return (
+              <View style={challengesStyles.emptyState}>
+                <Ionicons name="leaf-outline" size={64} color="#d1d5db" />
+                <Text style={challengesStyles.emptyTitle}>
+                  {activeFilter === 'My Posts' ? 'No posts yet' : 'No posts found'}
+                </Text>
+                <Text style={challengesStyles.emptySubtitle}>
+                  {activeFilter === 'My Posts'
+                    ? 'Post your first eco action to get started!'
+                    : 'Be the first to post an eco action!'}
+                </Text>
+              </View>
+            );
+          }
+
+          return filteredPosts.map((post) => (
             <View key={post.id} style={challengesStyles.postCard}>
               {/* User Info */}
               <View style={challengesStyles.postHeader}>
@@ -388,7 +604,11 @@ const ChallengesScreen: React.FC = () => {
               </View>
 
               {/* Post Image */}
-              <Image source={post.image} style={challengesStyles.postImage} resizeMode="cover" />
+              <Image
+                source={typeof post.image === 'object' && 'uri' in post.image ? post.image : post.image}
+                style={challengesStyles.postImage}
+                resizeMode="cover"
+              />
 
               {/* Post Description */}
               <Text style={challengesStyles.postDescription}>{post.description}</Text>
@@ -409,8 +629,8 @@ const ChallengesScreen: React.FC = () => {
                 )}
               </View>
             </View>
-          ))
-        )}
+          ));
+        })()}
       </ScrollView>
 
       {/* Post Creation Modal */}
@@ -425,12 +645,29 @@ const ChallengesScreen: React.FC = () => {
             </View>
 
             {/* Image Upload Area */}
-            <TouchableOpacity style={challengesStyles.imageUploadArea}>
-              <Ionicons name="camera" size={48} color="#9ca3af" />
-              <Text style={challengesStyles.imageUploadText}>Tap to add photo</Text>
-              <Text style={challengesStyles.imageUploadHint}>
-                Show your eco action or impact
-              </Text>
+            <TouchableOpacity
+              style={challengesStyles.imageUploadArea}
+              onPress={showImagePickerOptions}
+            >
+              {selectedImage ? (
+                <>
+                  <Image source={{ uri: selectedImage }} style={challengesStyles.previewImage} resizeMode="cover" />
+                  <TouchableOpacity
+                    style={challengesStyles.removeImageButton}
+                    onPress={() => setSelectedImage(null)}
+                  >
+                    <Ionicons name="close-circle" size={24} color="#ef4444" />
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <Ionicons name="camera" size={48} color="#9ca3af" />
+                  <Text style={challengesStyles.imageUploadText}>Tap to add photo</Text>
+                  <Text style={challengesStyles.imageUploadHint}>
+                    Camera or Photo Library
+                  </Text>
+                </>
+              )}
             </TouchableOpacity>
 
             {/* Description Input */}
@@ -486,20 +723,46 @@ const ChallengesScreen: React.FC = () => {
               ]}
               onPress={() => {
                 if (postDescription.trim()) {
-                  setIsAnalyzing(true);
-                  setShowPostModal(false);
-                  // Simulate AI analysis
-                  setTimeout(() => {
-                    setIsAnalyzing(false);
-                    setPostDescription('');
-                    setSelectedCategory('');
-                    // Show success message
-                  }, 3000);
+                  simulateAIAnalysis();
                 }
               }}
               disabled={!postDescription.trim()}
             >
               <Text style={challengesStyles.modalButtonText}>Submit for AI Analysis</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {/* Image Picker Options Modal (Android) */}
+      {showImagePickerModal && (
+        <View style={challengesStyles.modalOverlay}>
+          <View style={challengesStyles.imagePickerModal}>
+            <View style={challengesStyles.modalHeader}>
+              <Text style={challengesStyles.modalTitle}>Select Image Source</Text>
+              <TouchableOpacity onPress={() => setShowImagePickerModal(false)}>
+                <Ionicons name="close" size={24} color="#6b7280" />
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={challengesStyles.imagePickerOption}
+              onPress={() => {
+                setShowImagePickerModal(false);
+                pickImage('camera');
+              }}
+            >
+              <Ionicons name="camera" size={32} color="#16a34a" />
+              <Text style={challengesStyles.imagePickerOptionText}>Take Photo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={challengesStyles.imagePickerOption}
+              onPress={() => {
+                setShowImagePickerModal(false);
+                pickImage('library');
+              }}
+            >
+              <Ionicons name="images" size={32} color="#16a34a" />
+              <Text style={challengesStyles.imagePickerOptionText}>Choose from Library</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -528,11 +791,19 @@ const ChallengesScreen: React.FC = () => {
             </Animated.View>
             <Text style={challengesStyles.analyzingTitle}>AI Analyzing Your Impact...</Text>
             <Text style={challengesStyles.analyzingSubtitle}>
-              Detecting waste types, estimating impact, and calculating your score
+              {analysisMessage || 'Processing your submission...'}
             </Text>
             <View style={challengesStyles.analyzingProgress}>
-              <View style={[challengesStyles.analyzingProgressBar, { width: '75%' }]} />
+              <View
+                style={[
+                  challengesStyles.analyzingProgressBar,
+                  { width: `${analysisProgress}%` },
+                ]}
+              />
             </View>
+            <Text style={challengesStyles.analyzingProgressText}>
+              {analysisProgress}% Complete
+            </Text>
           </View>
         </View>
       )}
@@ -553,28 +824,598 @@ const EnergyScreen: React.FC = () => {
   );
 };
 
-// Rewards Screen Component (Placeholder)
+// Rewards Screen Component (Eco Quest Scoreboard)
 const RewardsScreen: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'leaderboard' | 'badges' | 'rewards'>('leaderboard');
+  const currentUserPoints = 2450;
+  const currentUserRank = 12;
+  const currentUserBadges = 8;
+
+  const leaderboard = [
+    { rank: 1, name: 'Alex Chen', points: 5420, school: 'Green Valley High', badge: '🥇' },
+    { rank: 2, name: 'Maya Patel', points: 4890, school: 'Eco Academy', badge: '🥈' },
+    { rank: 3, name: 'Jordan Kim', points: 4650, school: 'Green Valley High', badge: '🥉' },
+    { rank: 4, name: 'Sam Taylor', points: 4320, school: 'Eco Academy', badge: '' },
+    { rank: 5, name: 'Riley Brown', points: 4100, school: 'Nature School', badge: '' },
+    { rank: 6, name: 'Casey Lee', points: 3890, school: 'Green Valley High', badge: '' },
+    { rank: 7, name: 'Morgan White', points: 3650, school: 'Eco Academy', badge: '' },
+    { rank: 8, name: 'Taylor Green', points: 3420, school: 'Nature School', badge: '' },
+    { rank: 9, name: 'Jamie Blue', points: 3200, school: 'Green Valley High', badge: '' },
+    { rank: 10, name: 'Jordan Red', points: 2980, school: 'Eco Academy', badge: '' },
+    { rank: 11, name: 'Alex Yellow', points: 2700, school: 'Nature School', badge: '' },
+    { rank: 12, name: 'Ndahiro', points: 2450, school: 'Rwanda Coding Academy', badge: '', isCurrentUser: true },
+    { rank: 13, name: 'Sam Purple', points: 2200, school: 'Green Valley High', badge: '' },
+    { rank: 14, name: 'Casey Orange', points: 1980, school: 'Eco Academy', badge: '' },
+  ];
+
+  const badges = [
+    { id: '1', name: 'Eco Warrior', icon: 'shield', color: '#16a34a', earned: true, description: 'Complete 10 eco actions' },
+    { id: '2', name: 'Waste Hero', icon: 'trash', color: '#059669', earned: true, description: 'Divert 100kg of waste' },
+    { id: '3', name: 'Community Leader', icon: 'people', color: '#0d9488', earned: true, description: 'Get 50 likes on posts' },
+    { id: '4', name: 'Green Thumb', icon: 'leaf', color: '#10b981', earned: true, description: 'Plant 5 trees' },
+    { id: '5', name: 'Recycling Master', icon: 'refresh-circle', color: '#14b8a6', earned: true, description: 'Recycle 200 items' },
+    { id: '6', name: 'Carbon Neutral', icon: 'cloud', color: '#06b6d4', earned: true, description: 'Reduce 500kg CO₂' },
+    { id: '7', name: 'Eco Influencer', icon: 'star', color: '#f59e0b', earned: true, description: 'Reach 1000 followers' },
+    { id: '8', name: 'Sustainability Champion', icon: 'trophy', color: '#fbbf24', earned: true, description: 'Earn 5000 points' },
+    { id: '9', name: 'Ocean Guardian', icon: 'water', color: '#3b82f6', earned: false, description: 'Clean 10 beaches' },
+    { id: '10', name: 'Forest Protector', icon: 'tree', color: '#10b981', earned: false, description: 'Plant 20 trees' },
+    { id: '11', name: 'Zero Waste', icon: 'close-circle', color: '#6366f1', earned: false, description: '30 days zero waste' },
+    { id: '12', name: 'Eco Legend', icon: 'diamond', color: '#8b5cf6', earned: false, description: 'Earn 10000 points' },
+  ];
+
+  const rewards = [
+    { id: '1', name: 'Eco Starter Kit', points: 500, icon: 'gift', available: true, description: 'Reusable bag, water bottle, and bamboo utensils' },
+    { id: '2', name: 'Plant a Tree Certificate', points: 1000, icon: 'leaf', available: true, description: 'We\'ll plant a tree in your name' },
+    { id: '3', name: 'Eco Workshop Ticket', points: 1500, icon: 'school', available: true, description: 'Free entry to sustainability workshop' },
+    { id: '4', name: 'School Recognition', points: 2000, icon: 'trophy', available: true, description: 'Your school gets featured' },
+    { id: '5', name: 'Eco Merchandise Pack', points: 2500, icon: 'shirt', available: false, description: 'Eco-friendly t-shirt and accessories' },
+    { id: '6', name: 'VIP Eco Event Pass', points: 5000, icon: 'ticket', available: false, description: 'Exclusive access to eco summit' },
+  ];
+
+  const schoolRankings = [
+    { rank: 1, name: 'Green Valley High', points: 45230, students: 120, badge: '🥇' },
+    { rank: 2, name: 'Eco Academy', points: 38950, students: 95, badge: '🥈' },
+    { rank: 3, name: 'Nature School', points: 32100, students: 80, badge: '🥉' },
+    { rank: 4, name: 'Sustainable High', points: 28900, students: 110, badge: '' },
+    { rank: 5, name: 'Green Tech School', points: 25600, students: 75, badge: '' },
+  ];
+
   return (
     <SafeAreaView style={rewardsStyles.container}>
       <StatusBar style="dark" />
-      <View style={rewardsStyles.content}>
-        <Text style={rewardsStyles.title}>Rewards</Text>
-        <Text style={rewardsStyles.subtitle}>Coming soon...</Text>
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header with User Stats */}
+        <View style={rewardsStyles.header}>
+          <View style={rewardsStyles.userStatsCard}>
+            <View style={rewardsStyles.userStatsRow}>
+              <View style={rewardsStyles.statItem}>
+                <Text style={rewardsStyles.statValue}>{currentUserPoints.toLocaleString()}</Text>
+                <Text style={rewardsStyles.statLabel}>Points</Text>
+              </View>
+              <View style={rewardsStyles.statDivider} />
+              <View style={rewardsStyles.statItem}>
+                <Text style={rewardsStyles.statValue}>#{currentUserRank}</Text>
+                <Text style={rewardsStyles.statLabel}>Rank</Text>
+              </View>
+              <View style={rewardsStyles.statDivider} />
+              <View style={rewardsStyles.statItem}>
+                <Text style={rewardsStyles.statValue}>{currentUserBadges}</Text>
+                <Text style={rewardsStyles.statLabel}>Badges</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Tab Navigation */}
+        <View style={rewardsStyles.tabContainer}>
+          <TouchableOpacity
+            style={[rewardsStyles.tab, activeTab === 'leaderboard' && rewardsStyles.tabActive]}
+            onPress={() => setActiveTab('leaderboard')}
+          >
+            <Ionicons
+              name="podium"
+              size={20}
+              color={activeTab === 'leaderboard' ? '#16a34a' : '#6b7280'}
+            />
+            <Text
+              style={[
+                rewardsStyles.tabText,
+                activeTab === 'leaderboard' && rewardsStyles.tabTextActive,
+              ]}
+            >
+              Leaderboard
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[rewardsStyles.tab, activeTab === 'badges' && rewardsStyles.tabActive]}
+            onPress={() => setActiveTab('badges')}
+          >
+            <Ionicons
+              name="medal"
+              size={20}
+              color={activeTab === 'badges' ? '#16a34a' : '#6b7280'}
+            />
+            <Text
+              style={[
+                rewardsStyles.tabText,
+                activeTab === 'badges' && rewardsStyles.tabTextActive,
+              ]}
+            >
+              Badges
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[rewardsStyles.tab, activeTab === 'rewards' && rewardsStyles.tabActive]}
+            onPress={() => setActiveTab('rewards')}
+          >
+            <Ionicons
+              name="gift"
+              size={20}
+              color={activeTab === 'rewards' ? '#16a34a' : '#6b7280'}
+            />
+            <Text
+              style={[
+                rewardsStyles.tabText,
+                activeTab === 'rewards' && rewardsStyles.tabTextActive,
+              ]}
+            >
+              Rewards
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Content based on active tab */}
+        {activeTab === 'leaderboard' && (
+          <View style={rewardsStyles.content}>
+            {/* Top 3 Podium */}
+            <View style={rewardsStyles.podiumContainer}>
+              {leaderboard.slice(1, 4).map((user, index) => (
+                <View
+                  key={user.rank}
+                  style={[
+                    rewardsStyles.podiumItem,
+                    index === 1 && rewardsStyles.podiumFirst,
+                  ]}
+                >
+                  <View style={[rewardsStyles.podiumRank, { backgroundColor: index === 1 ? '#fbbf24' : index === 0 ? '#9ca3af' : '#cd7f32' }]}>
+                    <Text style={rewardsStyles.podiumRankText}>#{user.rank}</Text>
+                  </View>
+                  <View style={rewardsStyles.podiumAvatar}>
+                    <Ionicons name="person" size={32} color="#ffffff" />
+                  </View>
+                  <Text style={rewardsStyles.podiumName} numberOfLines={1}>
+                    {user.name}
+                  </Text>
+                  <Text style={rewardsStyles.podiumPoints}>
+                    {user.points.toLocaleString()} pts
+                  </Text>
+                </View>
+              ))}
+            </View>
+
+            {/* Full Leaderboard */}
+            <View style={rewardsStyles.leaderboardSection}>
+              <Text style={rewardsStyles.sectionTitle}>Full Leaderboard</Text>
+              {leaderboard.map((user) => (
+                <View
+                  key={user.rank}
+                  style={[
+                    rewardsStyles.leaderboardItem,
+                    user.isCurrentUser && rewardsStyles.leaderboardItemCurrent,
+                  ]}
+                >
+                  <View style={rewardsStyles.leaderboardLeft}>
+                    <View
+                      style={[
+                        rewardsStyles.rankBadge,
+                        user.rank <= 3 && rewardsStyles.rankBadgeTop,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          rewardsStyles.rankText,
+                          user.rank <= 3 && rewardsStyles.rankTextTop,
+                        ]}
+                      >
+                        {user.rank}
+                      </Text>
+                    </View>
+                    <View style={rewardsStyles.leaderboardAvatar}>
+                      <Ionicons name="person" size={20} color="#6b7280" />
+                    </View>
+                    <View style={rewardsStyles.leaderboardInfo}>
+                      <Text
+                        style={[
+                          rewardsStyles.leaderboardName,
+                          user.isCurrentUser && rewardsStyles.leaderboardNameCurrent,
+                        ]}
+                      >
+                        {user.name}
+                      </Text>
+                      <Text style={rewardsStyles.leaderboardSchool}>{user.school}</Text>
+                    </View>
+                  </View>
+                  <View style={rewardsStyles.leaderboardRight}>
+                    <Text
+                      style={[
+                        rewardsStyles.leaderboardPoints,
+                        user.isCurrentUser && rewardsStyles.leaderboardPointsCurrent,
+                      ]}
+                    >
+                      {user.points.toLocaleString()}
+                    </Text>
+                    <Text style={rewardsStyles.leaderboardPointsLabel}>pts</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+
+            {/* School Rankings */}
+            <View style={rewardsStyles.schoolSection}>
+              <Text style={rewardsStyles.sectionTitle}>🏫 School Rankings</Text>
+              {schoolRankings.map((school) => (
+                <View key={school.rank} style={rewardsStyles.schoolItem}>
+                  <View style={rewardsStyles.schoolLeft}>
+                    <Text style={rewardsStyles.schoolRank}>#{school.rank}</Text>
+                    <View style={rewardsStyles.schoolInfo}>
+                      <Text style={rewardsStyles.schoolName}>{school.name}</Text>
+                      <Text style={rewardsStyles.schoolStudents}>
+                        {school.students} students
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={rewardsStyles.schoolRight}>
+                    <Text style={rewardsStyles.schoolPoints}>
+                      {school.points.toLocaleString()} pts
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {activeTab === 'badges' && (
+          <View style={rewardsStyles.content}>
+            <Text style={rewardsStyles.sectionTitle}>Your Achievements</Text>
+            <View style={rewardsStyles.badgesGrid}>
+              {badges.map((badge) => (
+                <View
+                  key={badge.id}
+                  style={[
+                    rewardsStyles.badgeCard,
+                    !badge.earned && rewardsStyles.badgeCardLocked,
+                  ]}
+                >
+                  <View
+                    style={[
+                      rewardsStyles.badgeIconContainer,
+                      { backgroundColor: badge.earned ? badge.color + '20' : '#e5e7eb' },
+                    ]}
+                  >
+                    <Ionicons
+                      name={badge.icon as any}
+                      size={32}
+                      color={badge.earned ? badge.color : '#9ca3af'}
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      rewardsStyles.badgeName,
+                      !badge.earned && rewardsStyles.badgeNameLocked,
+                    ]}
+                  >
+                    {badge.name}
+                  </Text>
+                  <Text style={rewardsStyles.badgeDescription}>{badge.description}</Text>
+                  {!badge.earned && (
+                    <View style={rewardsStyles.lockedOverlay}>
+                      <Ionicons name="lock-closed" size={24} color="#9ca3af" />
+                    </View>
+                  )}
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {activeTab === 'rewards' && (
+          <View style={rewardsStyles.content}>
+            <Text style={rewardsStyles.sectionTitle}>Redeem Your Points</Text>
+            {rewards.map((reward) => (
+              <View
+                key={reward.id}
+                style={[
+                  rewardsStyles.rewardCard,
+                  !reward.available && rewardsStyles.rewardCardLocked,
+                ]}
+              >
+                <View
+                  style={[
+                    rewardsStyles.rewardIconContainer,
+                    { backgroundColor: reward.available ? '#d1fae5' : '#f3f4f6' },
+                  ]}
+                >
+                  <Ionicons
+                    name={reward.icon as any}
+                    size={28}
+                    color={reward.available ? '#16a34a' : '#9ca3af'}
+                  />
+                </View>
+                <View style={rewardsStyles.rewardInfo}>
+                  <Text
+                    style={[
+                      rewardsStyles.rewardName,
+                      !reward.available && rewardsStyles.rewardNameLocked,
+                    ]}
+                  >
+                    {reward.name}
+                  </Text>
+                  <Text style={rewardsStyles.rewardDescription}>{reward.description}</Text>
+                </View>
+                <TouchableOpacity
+                  style={[
+                    rewardsStyles.redeemButton,
+                    (!reward.available || currentUserPoints < reward.points) &&
+                      rewardsStyles.redeemButtonDisabled,
+                  ]}
+                  disabled={!reward.available || currentUserPoints < reward.points}
+                >
+                  <Text
+                    style={[
+                      rewardsStyles.redeemButtonText,
+                      (!reward.available || currentUserPoints < reward.points) &&
+                        rewardsStyles.redeemButtonTextDisabled,
+                    ]}
+                  >
+                    {currentUserPoints >= reward.points
+                      ? `${reward.points} pts`
+                      : 'Not enough'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
-// Profile Screen Component (Placeholder)
+// Profile Screen Component
 const ProfileScreen: React.FC = () => {
+  const userData = {
+    name: 'Ndahiro',
+    username: '@ndahiro',
+    school: 'Rwanda Coding Academy',
+    email: 'ndahiroloicke@gmail.com',
+    points: 2450,
+    rank: 12,
+    badges: 8,
+    posts: 23,
+    ecoLevel: 'Eco Champion',
+    levelProgress: 65,
+    joinDate: 'Jan 2024',
+  };
+
+  const recentAchievements = [
+    { id: '1', name: 'Waste Hero', icon: 'trash', color: '#059669', date: '2 days ago' },
+    { id: '2', name: 'Community Leader', icon: 'people', color: '#0d9488', date: '1 week ago' },
+    { id: '3', name: 'Green Thumb', icon: 'leaf', color: '#10b981', date: '2 weeks ago' },
+  ];
+
+  const menuItems = [
+    {
+      id: '1',
+      title: 'My Posts',
+      icon: 'document-text',
+      color: '#16a34a',
+      action: () => {},
+    },
+    {
+      id: '2',
+      title: 'Achievements',
+      icon: 'trophy',
+      color: '#f59e0b',
+      action: () => {},
+    },
+    {
+      id: '3',
+      title: 'Settings',
+      icon: 'settings',
+      color: '#6366f1',
+      action: () => {},
+    },
+    {
+      id: '4',
+      title: 'Help & Support',
+      icon: 'help-circle',
+      color: '#8b5cf6',
+      action: () => {},
+    },
+    {
+      id: '5',
+      title: 'About',
+      icon: 'information-circle',
+      color: '#6b7280',
+      action: () => {},
+    },
+    {
+      id: '6',
+      title: 'Logout',
+      icon: 'log-out',
+      color: '#ef4444',
+      action: () => {},
+    },
+  ];
+
+  const getEcoLevelColor = (level: string) => {
+    if (level.includes('Champion')) return '#fbbf24';
+    if (level.includes('Warrior')) return '#16a34a';
+    if (level.includes('Guardian')) return '#3b82f6';
+    return '#6b7280';
+  };
+
   return (
     <SafeAreaView style={profileStyles.container}>
       <StatusBar style="dark" />
-      <View style={profileStyles.content}>
-        <Text style={profileStyles.title}>Profile</Text>
-        <Text style={profileStyles.subtitle}>Coming soon...</Text>
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Profile Header */}
+        <View style={profileStyles.header}>
+          <View style={profileStyles.headerBackground} />
+          <View style={profileStyles.profileSection}>
+            {/* Avatar */}
+            <View style={profileStyles.avatarContainer}>
+              <View style={profileStyles.avatar}>
+                <Ionicons name="person" size={48} color="#ffffff" />
+              </View>
+              <TouchableOpacity style={profileStyles.editAvatarButton}>
+                <Ionicons name="camera" size={16} color="#ffffff" />
+              </TouchableOpacity>
+            </View>
+
+            {/* User Info */}
+            <Text style={profileStyles.userName}>{userData.name}</Text>
+            <Text style={profileStyles.username}>{userData.username}</Text>
+            <Text style={profileStyles.school}>{userData.school}</Text>
+
+            {/* Eco Level Badge */}
+            <View style={[profileStyles.ecoLevelBadge, { backgroundColor: getEcoLevelColor(userData.ecoLevel) + '20' }]}>
+              <Ionicons name="leaf" size={18} color={getEcoLevelColor(userData.ecoLevel)} />
+              <Text style={[profileStyles.ecoLevelText, { color: getEcoLevelColor(userData.ecoLevel) }]}>
+                {userData.ecoLevel}
+              </Text>
+            </View>
+
+            {/* Level Progress */}
+            <View style={profileStyles.levelProgressContainer}>
+              <View style={profileStyles.levelProgressBar}>
+                <View style={[profileStyles.levelProgressFill, { width: `${userData.levelProgress}%` }]} />
+              </View>
+              <Text style={profileStyles.levelProgressText}>
+                {userData.levelProgress}% to next level
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Stats Grid */}
+        <View style={profileStyles.statsContainer}>
+          <View style={profileStyles.statCard}>
+            <View style={[profileStyles.statIconContainer, { backgroundColor: '#d1fae5' }]}>
+              <Ionicons name="star" size={20} color="#16a34a" />
+            </View>
+            <Text style={profileStyles.statValue} numberOfLines={1}>
+              {userData.points.toLocaleString()}
+            </Text>
+            <Text style={profileStyles.statLabel} numberOfLines={1}>
+              Points
+            </Text>
+          </View>
+          <View style={profileStyles.statCard}>
+            <View style={[profileStyles.statIconContainer, { backgroundColor: '#fef3c7' }]}>
+              <Ionicons name="trophy" size={20} color="#f59e0b" />
+            </View>
+            <Text style={profileStyles.statValue} numberOfLines={1}>
+              #{userData.rank}
+            </Text>
+            <Text style={profileStyles.statLabel} numberOfLines={1}>
+              Rank
+            </Text>
+          </View>
+          <View style={profileStyles.statCard}>
+            <View style={[profileStyles.statIconContainer, { backgroundColor: '#dbeafe' }]}>
+              <Ionicons name="medal" size={20} color="#3b82f6" />
+            </View>
+            <Text style={profileStyles.statValue} numberOfLines={1}>
+              {userData.badges}
+            </Text>
+            <Text style={profileStyles.statLabel} numberOfLines={1}>
+              Badges
+            </Text>
+          </View>
+          <View style={profileStyles.statCard}>
+            <View style={[profileStyles.statIconContainer, { backgroundColor: '#fce7f3' }]}>
+              <Ionicons name="images" size={20} color="#ec4899" />
+            </View>
+            <Text style={profileStyles.statValue}>{userData.posts}</Text>
+            <Text style={profileStyles.statLabel}>Posts</Text>
+          </View>
+        </View>
+
+        {/* Recent Achievements */}
+        <View style={profileStyles.section}>
+          <Text style={profileStyles.sectionTitle}>Recent Achievements</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={profileStyles.achievementsContainer}>
+            {recentAchievements.map((achievement) => (
+              <View key={achievement.id} style={profileStyles.achievementCard}>
+                <View style={[profileStyles.achievementIconContainer, { backgroundColor: achievement.color + '20' }]}>
+                  <Ionicons name={achievement.icon as any} size={32} color={achievement.color} />
+                </View>
+                <Text style={profileStyles.achievementName}>{achievement.name}</Text>
+                <Text style={profileStyles.achievementDate}>{achievement.date}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+
+        {/* Account Information */}
+        <View style={profileStyles.section}>
+          <Text style={profileStyles.sectionTitle}>Account Information</Text>
+          <View style={profileStyles.infoCard}>
+            <View style={profileStyles.infoRow}>
+              <View style={profileStyles.infoLeft}>
+                <Ionicons name="mail" size={20} color="#6b7280" />
+                <Text style={profileStyles.infoLabel}>Email</Text>
+              </View>
+              <Text style={profileStyles.infoValue}>{userData.email}</Text>
+            </View>
+            <View style={profileStyles.infoDivider} />
+            <View style={profileStyles.infoRow}>
+              <View style={profileStyles.infoLeft}>
+                <Ionicons name="school" size={20} color="#6b7280" />
+                <Text style={profileStyles.infoLabel}>School</Text>
+              </View>
+              <Text style={profileStyles.infoValue}>{userData.school}</Text>
+            </View>
+            <View style={profileStyles.infoDivider} />
+            <View style={profileStyles.infoRow}>
+              <View style={profileStyles.infoLeft}>
+                <Ionicons name="calendar" size={20} color="#6b7280" />
+                <Text style={profileStyles.infoLabel}>Member Since</Text>
+              </View>
+              <Text style={profileStyles.infoValue}>{userData.joinDate}</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Menu Items */}
+        <View style={profileStyles.section}>
+          <Text style={profileStyles.sectionTitle}>Menu</Text>
+          <View style={profileStyles.menuContainer}>
+            {menuItems.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={profileStyles.menuItem}
+                onPress={item.action}
+                activeOpacity={0.7}
+              >
+                <View style={[profileStyles.menuIconContainer, { backgroundColor: item.color + '20' }]}>
+                  <Ionicons name={item.icon as any} size={22} color={item.color} />
+                </View>
+                <Text style={profileStyles.menuText}>{item.title}</Text>
+                <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* App Version */}
+        <View style={profileStyles.footer}>
+          <Text style={profileStyles.footerText}>EcoSync Mobile v1.0.0</Text>
+          <Text style={profileStyles.footerSubtext}>Making the world greener, one action at a time 🌱</Text>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -1350,24 +2191,6 @@ const homeStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9fafb',
   },
-  decorativeCircle1: {
-    position: 'absolute',
-    top: -100,
-    right: -50,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(34, 197, 94, 0.08)',
-  },
-  decorativeCircle2: {
-    position: 'absolute',
-    top: 150,
-    left: -80,
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    backgroundColor: 'rgba(59, 130, 246, 0.06)',
-  },
   scrollView: {
     flex: 1,
   },
@@ -1612,6 +2435,309 @@ const homeStyles = StyleSheet.create({
     color: '#111827',
     fontFamily: 'Montserrat',
     lineHeight: 18,
+  },
+  // Hero Section
+  heroSection: {
+    backgroundColor: '#16a34a',
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    paddingTop: 20,
+    paddingBottom: 32,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  heroContent: {
+    paddingHorizontal: 20,
+  },
+  heroTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 24,
+  },
+  heroGreeting: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontFamily: 'Montserrat',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  heroName: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#ffffff',
+    fontFamily: 'Montserrat',
+  },
+  notificationButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#ef4444',
+  },
+  pointsCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  pointsCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  pointsIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#fef3c7',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rankInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  // Stats Grid
+  statsGrid: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 8,
+    gap: 12,
+  },
+  statCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderLeftWidth: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+    marginBottom: 12,
+  },
+  statIconWrapper: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  statContent: {
+    flex: 1,
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: '700',
+    fontFamily: 'Montserrat',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 13,
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+    fontWeight: '500',
+  },
+  // Challenge Section
+  challengeSection: {
+    paddingHorizontal: 20,
+    marginTop: 8,
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  seeAllText: {
+    fontSize: 14,
+    color: '#16a34a',
+    fontFamily: 'Montserrat',
+    fontWeight: '600',
+  },
+  challengeCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  challengeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fffbeb',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    gap: 6,
+  },
+  challengeBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#f59e0b',
+    fontFamily: 'Montserrat',
+  },
+  challengeDescription: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  progressSection: {
+    marginTop: 8,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  progressLabel: {
+    fontSize: 13,
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+    fontWeight: '500',
+  },
+  progressPercent: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#16a34a',
+    fontFamily: 'Montserrat',
+  },
+  progressTime: {
+    fontSize: 12,
+    color: '#9ca3af',
+    fontFamily: 'Montserrat',
+  },
+  // Quick Actions
+  quickActionsSection: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  quickActionCard: {
+    width: (width - 52) / 2,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  quickActionIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  quickActionLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+    fontFamily: 'Montserrat',
+    textAlign: 'center',
+  },
+  // Activity Section
+  activitySection: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  activityList: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  activityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  activityAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  activityContent: {
+    flex: 1,
+  },
+  activityText: {
+    fontSize: 14,
+    color: '#374151',
+    fontFamily: 'Montserrat',
+    marginBottom: 4,
+  },
+  activityUser: {
+    fontWeight: '700',
+    color: '#111827',
+  },
+  activityTime: {
+    fontSize: 12,
+    color: '#9ca3af',
+    fontFamily: 'Montserrat',
+  },
+  activityPoints: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fef3c7',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    gap: 4,
+  },
+  activityPointsText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#f59e0b',
+    fontFamily: 'Montserrat',
   },
 });
 
@@ -1881,6 +3007,20 @@ const challengesStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  previewImage: {
+    width: '100%',
+    height: '100%',
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 4,
   },
   imageUploadText: {
     fontSize: 16,
@@ -2010,6 +3150,37 @@ const challengesStyles = StyleSheet.create({
     backgroundColor: '#16a34a',
     borderRadius: 4,
   },
+  analyzingProgressText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#16a34a',
+    fontFamily: 'Montserrat',
+    marginTop: 12,
+  },
+  imagePickerModal: {
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    padding: 24,
+    width: '85%',
+    maxWidth: 400,
+  },
+  imagePickerOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    borderRadius: 16,
+    backgroundColor: '#f9fafb',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  imagePickerOptionText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    fontFamily: 'Montserrat',
+    marginLeft: 16,
+  },
 });
 
 const energyStyles = StyleSheet.create({
@@ -2042,23 +3213,423 @@ const rewardsStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9fafb',
   },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+  header: {
+    backgroundColor: '#ffffff',
+    paddingTop: 20,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
   },
-  title: {
-    fontSize: 28,
+  userStatsCard: {
+    backgroundColor: '#f0fdf4',
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+  },
+  userStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statValue: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#16a34a',
+    fontFamily: 'Montserrat',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+    fontWeight: '500',
+  },
+  statDivider: {
+    width: 1,
+    height: 40,
+    backgroundColor: '#d1d5db',
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+    gap: 8,
+  },
+  tab: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: '#f9fafb',
+    gap: 6,
+  },
+  tabActive: {
+    backgroundColor: '#d1fae5',
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+  },
+  tabTextActive: {
+    color: '#16a34a',
+  },
+  content: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+  sectionTitle: {
+    fontSize: 22,
     fontWeight: '700',
     color: '#111827',
     fontFamily: 'Montserrat',
+    marginBottom: 20,
+    marginTop: 8,
+  },
+  // Podium Styles
+  podiumContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    marginBottom: 30,
+    paddingHorizontal: 10,
+    gap: 12,
+  },
+  podiumItem: {
+    flex: 1,
+    alignItems: 'center',
+    paddingBottom: 20,
+  },
+  podiumFirst: {
+    paddingBottom: 40,
+  },
+  podiumRank: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  podiumRankText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#ffffff',
+    fontFamily: 'Montserrat',
+  },
+  podiumAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#16a34a',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 8,
   },
-  subtitle: {
+  podiumName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+    fontFamily: 'Montserrat',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  podiumPoints: {
     fontSize: 16,
+    fontWeight: '700',
+    color: '#16a34a',
+    fontFamily: 'Montserrat',
+  },
+  // Leaderboard Styles
+  leaderboardSection: {
+    marginBottom: 30,
+  },
+  leaderboardItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  leaderboardItemCurrent: {
+    backgroundColor: '#f0fdf4',
+    borderWidth: 2,
+    borderColor: '#16a34a',
+  },
+  leaderboardLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  rankBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  rankBadgeTop: {
+    backgroundColor: '#fef3c7',
+  },
+  rankText: {
+    fontSize: 14,
+    fontWeight: '700',
     color: '#6b7280',
     fontFamily: 'Montserrat',
+  },
+  rankTextTop: {
+    color: '#f59e0b',
+  },
+  leaderboardAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  leaderboardInfo: {
+    flex: 1,
+  },
+  leaderboardName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    fontFamily: 'Montserrat',
+    marginBottom: 2,
+  },
+  leaderboardNameCurrent: {
+    color: '#16a34a',
+    fontWeight: '700',
+  },
+  leaderboardSchool: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+  },
+  leaderboardRight: {
+    alignItems: 'flex-end',
+  },
+  leaderboardPoints: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    fontFamily: 'Montserrat',
+  },
+  leaderboardPointsCurrent: {
+    color: '#16a34a',
+  },
+  leaderboardPointsLabel: {
+    fontSize: 12,
+    color: '#9ca3af',
+    fontFamily: 'Montserrat',
+  },
+  // School Rankings
+  schoolSection: {
+    marginBottom: 20,
+  },
+  schoolItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  schoolLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  schoolRank: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#16a34a',
+    fontFamily: 'Montserrat',
+    marginRight: 16,
+    width: 30,
+  },
+  schoolInfo: {
+    flex: 1,
+  },
+  schoolName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    fontFamily: 'Montserrat',
+    marginBottom: 4,
+  },
+  schoolStudents: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+  },
+  schoolRight: {
+    alignItems: 'flex-end',
+  },
+  schoolPoints: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#16a34a',
+    fontFamily: 'Montserrat',
+  },
+  // Badges Styles
+  badgesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 20,
+  },
+  badgeCard: {
+    width: (width - 52) / 2,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    position: 'relative',
+  },
+  badgeCardLocked: {
+    opacity: 0.6,
+  },
+  badgeIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  badgeName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111827',
+    fontFamily: 'Montserrat',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  badgeNameLocked: {
+    color: '#9ca3af',
+  },
+  badgeDescription: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+  lockedOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 20,
+  },
+  // Rewards Styles
+  rewardCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  rewardCardLocked: {
+    opacity: 0.7,
+  },
+  rewardIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  rewardInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  rewardName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    fontFamily: 'Montserrat',
+    marginBottom: 4,
+  },
+  rewardNameLocked: {
+    color: '#9ca3af',
+  },
+  rewardDescription: {
+    fontSize: 13,
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+    lineHeight: 18,
+  },
+  redeemButton: {
+    backgroundColor: '#16a34a',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 16,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  redeemButtonDisabled: {
+    backgroundColor: '#e5e7eb',
+  },
+  redeemButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#ffffff',
+    fontFamily: 'Montserrat',
+  },
+  redeemButtonTextDisabled: {
+    color: '#9ca3af',
   },
 });
 
@@ -2067,23 +3638,303 @@ const profileStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9fafb',
   },
-  content: {
-    flex: 1,
+  header: {
+    backgroundColor: '#ffffff',
+    paddingBottom: 30,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+    position: 'relative',
+  },
+  headerBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 120,
+    backgroundColor: '#f0fdf4',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+  },
+  profileSection: {
+    alignItems: 'center',
+    paddingTop: 20,
+    paddingHorizontal: 20,
+  },
+  avatarContainer: {
+    position: 'relative',
+    marginBottom: 16,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#16a34a',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    borderWidth: 4,
+    borderColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  title: {
+  editAvatarButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#16a34a',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#ffffff',
+  },
+  userName: {
     fontSize: 28,
     fontWeight: '700',
     color: '#111827',
     fontFamily: 'Montserrat',
-    marginBottom: 8,
+    marginBottom: 4,
   },
-  subtitle: {
+  username: {
     fontSize: 16,
     color: '#6b7280',
     fontFamily: 'Montserrat',
+    marginBottom: 8,
+  },
+  school: {
+    fontSize: 14,
+    color: '#9ca3af',
+    fontFamily: 'Montserrat',
+    marginBottom: 16,
+  },
+  ecoLevelBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginBottom: 16,
+    gap: 6,
+  },
+  ecoLevelText: {
+    fontSize: 14,
+    fontWeight: '700',
+    fontFamily: 'Montserrat',
+  },
+  levelProgressContainer: {
+    width: '100%',
+    paddingHorizontal: 20,
+  },
+  levelProgressBar: {
+    width: '100%',
+    height: 8,
+    backgroundColor: '#e5e7eb',
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginBottom: 8,
+  },
+  levelProgressFill: {
+    height: '100%',
+    backgroundColor: '#16a34a',
+    borderRadius: 4,
+  },
+  levelProgressText: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+    textAlign: 'center',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    gap: 8,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    justifyContent: 'flex-start',
+  },
+  statIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  statValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    fontFamily: 'Montserrat',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  statLabel: {
+    fontSize: 11,
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  section: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+    fontFamily: 'Montserrat',
+    marginBottom: 16,
+  },
+  achievementsContainer: {
+    gap: 12,
+    paddingRight: 20,
+  },
+  achievementCard: {
+    width: 140,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  achievementIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  achievementName: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#111827',
+    fontFamily: 'Montserrat',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  achievementDate: {
+    fontSize: 11,
+    color: '#9ca3af',
+    fontFamily: 'Montserrat',
+  },
+  infoCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  infoLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  infoLabel: {
+    fontSize: 15,
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+    fontWeight: '500',
+  },
+  infoValue: {
+    fontSize: 15,
+    color: '#111827',
+    fontFamily: 'Montserrat',
+    fontWeight: '600',
+  },
+  infoDivider: {
+    height: 1,
+    backgroundColor: '#e5e7eb',
+    marginVertical: 4,
+  },
+  menuContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  menuIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  menuText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    fontFamily: 'Montserrat',
+  },
+  footer: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  footerText: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontFamily: 'Montserrat',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  footerSubtext: {
+    fontSize: 12,
+    color: '#9ca3af',
+    fontFamily: 'Montserrat',
+    textAlign: 'center',
   },
 });
 
